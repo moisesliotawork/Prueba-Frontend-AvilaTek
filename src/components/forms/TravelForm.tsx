@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
+import Step4 from './Step4';
 import { TravelFormData, Step1Data, Step2Data, Step3Data } from '@/types/travel-form';
 
 export default function TravelForm() {
@@ -37,7 +38,9 @@ export default function TravelForm() {
     nextStep({
       travelers: data.travelers,
       pets: data.hasPets ? data.petCount : undefined,
-      extraLuggage: data.hasExtraLuggage ? data.luggageCount : undefined
+      extraLuggage: data.hasExtraLuggage ? data.luggageCount : undefined,
+      petCost: data.petCost,
+      luggageCost: data.luggageCost
     });
   };
 
@@ -45,11 +48,12 @@ export default function TravelForm() {
     nextStep({
       travelInsurance: data.hasTravelInsurance,
       preferredSeats: data.hasPreferredSeats,
-      specialAssistance: data.needsSpecialAssistance ? data.specialAssistanceNote : undefined
+      specialAssistance: data.needsSpecialAssistance ? data.specialAssistanceNote : undefined,
+      insuranceCost: data.insuranceCost,
+      seatsCost: data.seatsCost
     });
   };
 
-  // Función para mapear formData a initialData de Step3
   const getStep3InitialData = (): Partial<Step3Data> => {
     return {
       hasTravelInsurance: formData.travelInsurance || false,
@@ -61,6 +65,29 @@ export default function TravelForm() {
     };
   };
 
+  const calculateCosts = () => {
+    let basePrice = 200;
+    if (formData.flightClass === 'Business') basePrice = 500;
+    if (formData.flightClass === 'First Class') basePrice = 800;
+
+    const petCost = formData.pets ? formData.pets * 50 : 0;
+    const luggageCost = formData.extraLuggage ? formData.extraLuggage * 30 : 0;
+    const insuranceCost = formData.travelInsurance ? 75 : 0;
+    const seatsCost = formData.preferredSeats ? 50 : 0;
+
+    const totalAdditionalCosts = petCost + luggageCost + insuranceCost + seatsCost;
+    const totalCost = basePrice + totalAdditionalCosts;
+
+    return {
+      basePrice,
+      petCost,
+      luggageCost,
+      insuranceCost,
+      seatsCost,
+      totalCost
+    };
+  };
+
   const handleSubmit = () => {
     console.log('Form data:', formData);
     alert('Reservation confirmed successfully!');
@@ -68,9 +95,7 @@ export default function TravelForm() {
 
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-8">
-      {/* Form Content */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        {/* Step 1: Travel Information */}
         {currentStep === 1 && (
           <Step1 
             onNext={handleStep1Complete}
@@ -78,7 +103,6 @@ export default function TravelForm() {
           />
         )}
 
-        {/* Step 2: Traveler Information */}
         {currentStep === 2 && (
           <Step2
             onNext={handleStep2Complete}
@@ -87,7 +111,6 @@ export default function TravelForm() {
           />
         )}
 
-        {/* Step 3: Additional Services */}
         {currentStep === 3 && (
           <Step3
             onNext={handleStep3Complete}
@@ -96,82 +119,42 @@ export default function TravelForm() {
           />
         )}
 
-        {/* Step 4: Summary */}
         {currentStep === 4 && (
-          <div className="p-6 md:p-8 space-y-6">
-            <h2 className="text-2xl font-light text-gray-800">Review Your Trip</h2>
-            
-            <div className="space-y-6">
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-medium text-lg text-gray-700 mb-3">Travel Information</h3>
-                <div className="space-y-2 text-gray-600">
-                  <p><span className="font-medium">Destination:</span> {formData.destination}</p>
-                  <p><span className="font-medium">Departure:</span> {formData.departureDate}</p>
-                  <p><span className="font-medium">Return:</span> {formData.returnDate}</p>
-                  <p><span className="font-medium">Class:</span> {formData.flightClass}</p>
-                </div>
-              </div>
+          <Step4
+            formData={{
+              // Required TravelFormData fields
+              destination: formData.destination || '',
+              departureDate: formData.departureDate || '',
+              returnDate: formData.returnDate || '',
+              flightClass: formData.flightClass || 'Economy',
+              travelers: formData.travelers || [],
               
-              {/* Traveler Information Summary */}
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-medium text-lg text-gray-700 mb-3">Traveler Information</h3>
-                {formData.travelers?.map((traveler, index) => (
-                  <div key={index} className="mb-4 last:mb-0">
-                    <p className="font-medium">Traveler {index + 1}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-600">
-                      <p><span className="font-medium">Name:</span> {traveler.fullName}</p>
-                      <p><span className="font-medium">Birth Date:</span> {traveler.birthDate}</p>
-                      <p><span className="font-medium">Document:</span> {traveler.docType}-{traveler.docNumber}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              // Optional TravelFormData fields
+              pets: formData.pets,
+              extraLuggage: formData.extraLuggage,
+              travelInsurance: formData.travelInsurance,
+              preferredSeats: formData.preferredSeats,
+              specialAssistance: formData.specialAssistance,
               
-              {/* Additional Services Summary */}
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-medium text-lg text-gray-700 mb-3">Additional Services</h3>
-                <div className="space-y-2 text-gray-600">
-                  {formData.pets && (
-                    <p><span className="font-medium">Pets:</span> {formData.pets} (${formData.pets * 100})</p>
-                  )}
-                  {formData.extraLuggage && (
-                    <p><span className="font-medium">Extra Luggage:</span> {formData.extraLuggage} (${formData.extraLuggage * 50})</p>
-                  )}
-                  {formData.travelInsurance && (
-                    <p><span className="font-medium">Travel Insurance:</span> Yes ($75)</p>
-                  )}
-                  {formData.preferredSeats && (
-                    <p><span className="font-medium">Preferred Seats:</span> Yes ($50)</p>
-                  )}
-                  {formData.specialAssistance && (
-                    <div>
-                      <p><span className="font-medium">Special Assistance:</span> Yes</p>
-                      <p className="pl-4 text-gray-500">{formData.specialAssistance}</p>
-                    </div>
-                  )}
-                  {(!formData.pets && !formData.extraLuggage && !formData.travelInsurance && 
-                    !formData.preferredSeats && !formData.specialAssistance) && (
-                    <p className="text-gray-400">No additional services selected</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-between pt-6">
-              <button
-                onClick={prevStep}
-                className="px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                Back
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Confirm Booking
-              </button>
-            </div>
-          </div>
+              // Step2Data fields
+              travelerCount: formData.travelers?.length || 0,
+              hasPets: !!formData.pets,
+              petCount: formData.pets || 0,
+              hasExtraLuggage: !!formData.extraLuggage,
+              luggageCount: formData.extraLuggage || 0,
+              
+              // Step3Data fields
+              hasTravelInsurance: !!formData.travelInsurance,
+              hasPreferredSeats: !!formData.preferredSeats,
+              needsSpecialAssistance: !!formData.specialAssistance,
+              specialAssistanceNote: formData.specialAssistance || '',
+              
+              // Step4Data fields (from calculateCosts)
+              ...calculateCosts()
+            }}
+            onPrev={prevStep}
+            onConfirm={handleSubmit}
+          />
         )}
       </div>
     </div>

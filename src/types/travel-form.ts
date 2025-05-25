@@ -11,6 +11,12 @@ export type TravelFormData = {
   travelInsurance?: boolean;
   preferredSeats?: boolean;
   specialAssistance?: string;
+  petCost?: number;
+  luggageCost?: number;
+  insuranceCost?: number;
+  seatsCost?: number;
+  basePrice?: number;
+  totalCost?: number;
 };
 
 export interface Traveler {
@@ -62,4 +68,15 @@ export interface Step3Props {
   onNext: (data: Step3Data) => void;
   onPrev: () => void;
   initialData?: Partial<Step3Data>;
+}
+
+export interface Step4Data {
+  basePrice: number;
+  totalCost: number;
+}
+
+export interface Step4Props {
+  formData: TravelFormData & Step2Data & Step3Data & Step4Data;
+  onPrev: () => void;
+  onConfirm: () => void;
 }

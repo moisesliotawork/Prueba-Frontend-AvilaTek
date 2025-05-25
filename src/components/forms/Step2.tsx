@@ -310,13 +310,13 @@ export default function Step2({ onNext, onPrev, initialData }: Step2Props) {
           <button
             type="button"
             onClick={onPrev}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+            className="btn-primary w-full py-3 px-4 mt-6 text-lg font-medium"
           >
             Anterior
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="btn-primary w-full py-3 px-4 mt-6 text-lg font-medium"
           >
             Siguiente
           </button>
