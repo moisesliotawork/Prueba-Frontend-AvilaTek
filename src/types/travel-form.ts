@@ -13,12 +13,12 @@ export type TravelFormData = {
   specialAssistance?: string;
 };
 
-export type Traveler = {
+export interface Traveler {
   fullName: string;
   birthDate: string;
-  documentType: string;
-  documentNumber: string;
-};
+  docType: 'V' | 'E';
+  docNumber: string;
+}
 
 export type Step1Data = {
   destination: string;
@@ -31,3 +31,20 @@ export type Step1Props = {
   onNext: (data: Step1Data) => void;
   initialData?: Partial<TravelFormData>;
 };
+
+export interface Step2Data {
+  travelerCount: number;
+  travelers: Traveler[];
+  hasPets: boolean;
+  petCount: number;
+  hasExtraLuggage: boolean;
+  luggageCount: number;
+  petCost: number;
+  luggageCost: number;
+}
+
+export interface Step2Props {
+  onNext: (data: Step2Data) => void;
+  onPrev: () => void;
+  initialData?: Partial<Step2Data>;
+}
