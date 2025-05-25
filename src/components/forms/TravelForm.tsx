@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Step1 from './Step1';
 import Step2 from './Step2';
-import { TravelFormData, Step1Data, Step2Data } from '@/types/travel-form';
+import Step3 from './Step3';
+import { TravelFormData, Step1Data, Step2Data, Step3Data } from '@/types/travel-form';
 
 export default function TravelForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -40,6 +41,26 @@ export default function TravelForm() {
     });
   };
 
+  const handleStep3Complete = (data: Step3Data) => {
+    nextStep({
+      travelInsurance: data.hasTravelInsurance,
+      preferredSeats: data.hasPreferredSeats,
+      specialAssistance: data.needsSpecialAssistance ? data.specialAssistanceNote : undefined
+    });
+  };
+
+  // Función para mapear formData a initialData de Step3
+  const getStep3InitialData = (): Partial<Step3Data> => {
+    return {
+      hasTravelInsurance: formData.travelInsurance || false,
+      hasPreferredSeats: formData.preferredSeats || false,
+      needsSpecialAssistance: !!formData.specialAssistance,
+      specialAssistanceNote: formData.specialAssistance || '',
+      insuranceCost: formData.travelInsurance ? 75 : 0,
+      seatsCost: formData.preferredSeats ? 50 : 0
+    };
+  };
+
   const handleSubmit = () => {
     console.log('Form data:', formData);
     alert('Reservation confirmed successfully!');
@@ -68,29 +89,11 @@ export default function TravelForm() {
 
         {/* Step 3: Additional Services */}
         {currentStep === 3 && (
-          <div className="p-6 md:p-8 space-y-6">
-            <h2 className="text-2xl font-light text-gray-800">Additional Services</h2>
-            <div className="space-y-4">
-              {/* Placeholder for Step3 component */}
-              <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                <p className="text-gray-400">Services selection</p>
-              </div>
-            </div>
-            <div className="flex justify-between pt-4">
-              <button
-                onClick={prevStep}
-                className="px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                Back
-              </button>
-              <button
-                onClick={() => nextStep({})}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
+          <Step3
+            onNext={handleStep3Complete}
+            onPrev={prevStep}
+            initialData={getStep3InitialData()}
+          />
         )}
 
         {/* Step 4: Summary */}
@@ -134,7 +137,20 @@ export default function TravelForm() {
                   {formData.extraLuggage && (
                     <p><span className="font-medium">Extra Luggage:</span> {formData.extraLuggage} (${formData.extraLuggage * 50})</p>
                   )}
-                  {(!formData.pets && !formData.extraLuggage) && (
+                  {formData.travelInsurance && (
+                    <p><span className="font-medium">Travel Insurance:</span> Yes ($75)</p>
+                  )}
+                  {formData.preferredSeats && (
+                    <p><span className="font-medium">Preferred Seats:</span> Yes ($50)</p>
+                  )}
+                  {formData.specialAssistance && (
+                    <div>
+                      <p><span className="font-medium">Special Assistance:</span> Yes</p>
+                      <p className="pl-4 text-gray-500">{formData.specialAssistance}</p>
+                    </div>
+                  )}
+                  {(!formData.pets && !formData.extraLuggage && !formData.travelInsurance && 
+                    !formData.preferredSeats && !formData.specialAssistance) && (
                     <p className="text-gray-400">No additional services selected</p>
                   )}
                 </div>

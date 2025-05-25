@@ -173,7 +173,7 @@ export default function Step2({ onNext, onPrev, initialData }: Step2Props) {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor={`docType-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor={`docType-${index}`} className="block text-sm font-medium text-black-700 mb-1">
                     Tipo de documento
                   </label>
                   <select
@@ -202,7 +202,7 @@ export default function Step2({ onNext, onPrev, initialData }: Step2Props) {
                         handleTravelerChange(index, 'docNumber', value);
                       }
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-gray-800"
+                    className="input-field w-full px-4 py-2"
                     pattern="[0-9]{6,10}"
                     minLength={6}
                     maxLength={10}

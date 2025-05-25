@@ -48,3 +48,18 @@ export interface Step2Props {
   onPrev: () => void;
   initialData?: Partial<Step2Data>;
 }
+
+export interface Step3Data {
+  hasTravelInsurance: boolean;
+  hasPreferredSeats: boolean;
+  needsSpecialAssistance: boolean;
+  specialAssistanceNote: string;
+  insuranceCost: number;
+  seatsCost: number;
+}
+
+export interface Step3Props {
+  onNext: (data: Step3Data) => void;
+  onPrev: () => void;
+  initialData?: Partial<Step3Data>;
+}
